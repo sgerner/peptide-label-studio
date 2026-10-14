@@ -194,7 +194,7 @@ function previewLines(record, limit = 6) {
 
 function updatePreview() {
   const record = form.hidden ? selectedRecord() : currentDraft();
-  const count = Number(ui.labelsPerStock.value) || 8;
+  const count = Number(ui.labelsPerStock.value) || 4;
   ui.preview.replaceChildren();
   for (let index = 0; index < count; index += 1) {
     const band = document.createElement('div');
@@ -203,7 +203,7 @@ function updatePreview() {
     name.className = 'preview-name';
     name.textContent = record?.name || 'Peptide name';
     band.append(name);
-    for (const textValue of previewLines(record || {}, count === 8 ? 5 : 6)) {
+    for (const textValue of previewLines(record || {}, 6)) {
       const line = document.createElement('span');
       line.className = 'preview-line';
       line.textContent = textValue;
@@ -263,7 +263,7 @@ function setPrinterStatus(printer) {
     canvasText.textContent = `Report: ${width} print-width × ${length} feed dots; dimensions need to be readable.`;
   } else {
     const orientation = printer.orientation || (printer.printWidthDots >= printer.labelLengthDots ? 'landscape' : 'portrait');
-    const strips = Number(ui.labelsPerStock.value) || 8;
+    const strips = Number(ui.labelsPerStock.value) || 4;
     const transform = orientation === 'landscape'
       ? `Portrait design rotates 90°; ${strips}-up cuts run across the reported print width.`
       : `Portrait design prints upright; ${strips}-up cuts run along the reported feed length.`;

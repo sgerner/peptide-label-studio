@@ -18,7 +18,7 @@ chmodSync(DATA_DIR, 0o700);
 const HOST = '127.0.0.1';
 const PORT = Number.parseInt(process.env.PORT || '3036', 10);
 const PRINTER_PORT = Number.parseInt(process.env.PRINTER_PORT || '9100', 10);
-const VALID_UPS = new Set([5, 6, 8]);
+const VALID_UPS = new Set([3, 4]);
 const MAX_PRINT_QUANTITY = 250;
 const DISCOVERY_CONCURRENCY = 48;
 const MAX_DISCOVERY_HOSTS = 1022;
@@ -464,25 +464,43 @@ function bandLines(record) {
 function renderBand(record, start, pitch, { landscape, printWidthDots, labelLengthDots }) {
   let zpl = '';
   const details = bandLines(record);
+  const nameHeight = 48;
+  const nameWidth = 34;
+  const detailHeight = 34;
+  const detailWidth = 22;
+  const rowGap = 2;
+  const detailStep = detailHeight + rowGap;
+  const bandContentEnd = details.length
+    ? nameHeight + rowGap + (details.length - 1) * detailStep + detailHeight
+    : nameHeight;
+  const contentStart = Math.max(4, Math.floor((pitch - bandContentEnd) / 2));
+  const blockWidth = Math.max(1, labelLengthDots - 28);
+
   if (landscape) {
-    const margin = Math.max(4, Math.floor(pitch * 0.035));
-    const lineStep = Math.max(18, Math.min(22, Math.floor(pitch / (details.length + 1.5))));
-    const blockWidth = Math.max(1, labelLengthDots - 28);
-    zpl += textField(start + margin, 12, record.name, {
-      height: 22, width: 17, orientation: 'R', blockWidth,
+    // ^A0R rotates the text clockwise. Assign the portrait design's last
+    // vertical slot to the first row so the physical top-to-bottom order stays
+    // Name, then the details, on landscape media.
+    const nameX = details.length
+      ? start + contentStart + nameHeight + rowGap + (details.length - 1) * detailStep
+      : start + contentStart;
+    zpl += textField(nameX, 12, record.name, {
+      height: nameHeight, width: nameWidth, orientation: 'R', blockWidth,
     });
     details.forEach((line, index) => {
-      zpl += textField(start + margin + 27 + index * lineStep, 12, line, {
-        height: 14, width: 11, orientation: 'R', blockWidth,
+      const x = start + contentStart + (details.length - 1 - index) * detailStep;
+      zpl += textField(x, 12, line, {
+        height: detailHeight, width: detailWidth, orientation: 'R', blockWidth,
       });
     });
   } else {
-    zpl += textField(10, start + 3, record.name, {
-      height: 22, width: 17, blockWidth: Math.max(1, printWidthDots - 20),
+    const textWidth = Math.max(1, printWidthDots - 20);
+    zpl += textField(10, start + contentStart, record.name, {
+      height: nameHeight, width: nameWidth, blockWidth: textWidth,
     });
     details.forEach((line, index) => {
-      zpl += textField(10, start + 29 + index * 18, line, {
-        height: 14, width: 11, blockWidth: Math.max(1, printWidthDots - 20),
+      const y = start + contentStart + nameHeight + rowGap + index * detailStep;
+      zpl += textField(10, y, line, {
+        height: detailHeight, width: detailWidth, blockWidth: textWidth,
       });
     });
   }
@@ -641,7 +659,7 @@ async function handleApi(req, res, url) {
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_PRINT_QUANTITY) {
       throw new HttpError(400, `Label quantity must be from 1 to ${MAX_PRINT_QUANTITY}.`);
     }
-    if (!VALID_UPS.has(labelsPerStock)) throw new HttpError(400, 'Choose 5, 6, or 8 strips per 2×4 portrait design.');
+    if (!VALID_UPS.has(labelsPerStock)) throw new HttpError(400, 'Choose 3 or 4 strips per 2×4 portrait design.');
     if (request.mediaConfirmed !== true) throw new HttpError(400, 'Confirm that the roll is loaded in the orientation shown by the printer report and calibrated.');
     const record = rowToRecord(getRecord.get(id));
     if (!record) throw new HttpError(404, 'That peptide record was not found.');
