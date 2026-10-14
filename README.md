@@ -18,19 +18,18 @@ The database is created on first start at `data/vial-labels.sqlite`. It stays in
 
 Add a peptide record, enter the wording and units as you want them printed, and save it. Existing records can be selected, edited, or deleted. Vial cost is saved for reference and is not printed. Dose, dose volume, U-100 syringe marks, dilution, and concentration are stored exactly as entered; the app does not infer missing dilutions or calculate conversions. U-100 syringe marks are a volume scale, not biological IU.
 
-The on-screen design preview is always **2″ wide × 4″ tall**. Choose the number of individual vial labels and the number of cut strips within each 2″ × 4″ stock label:
+The on-screen design preview is always **2″ wide × 4″ tall**. Choose the number of individual vial labels within each 2″ × 4″ stock label:
 
-- 8 strips gives approximately ½″-tall labels.
-- 6 strips gives approximately ⅔″-tall labels.
-- 5 strips gives approximately ⅘″-tall labels.
+- 4 labels gives approximately 1″-tall labels.
+- 3 labels gives approximately 1⅓″-tall labels.
 
-For example, 20 vial labels at 8-up use 3 printer labels: 8 + 8 + 4 strips. Each strip repeats the selected record and has a cut guide.
+Each cut label repeats the selected record and has a cut guide. The print text is sized for these taller strips so the name and details are more legible.
 
 ## Prepare the printer
 
 From the Device panel, choose **Find printers** to scan private IPv4 networks attached to this computer for devices with raw ZPL available on port 9100 and a recognizable Zebra status page. Select the matching device and choose **Use selected**. The selection is saved in the local SQLite database. Discovery is read-only: it checks TCP/HTTP availability and does not send print data.
 
-The app sends raw ZPL to the selected printer. It reads that printer's status page before enabling print and adapts each ZPL label to the reported print width and label length. It includes those live dimensions in `^PW` and `^LL` on each print job. The preview remains portrait; when the report is landscape, the app rotates the artwork 90° and lays the cut strips across the printer's reported print-width axis. When the report is portrait, it prints the artwork upright and lays strips along the feed axis. The UI shows the live physical canvas separately from the design preview. The current printer report of about **1200 × 614 dots** is treated as configured media; the app does not force a hard-coded 600 × 1200-dot portrait setup.
+The app sends raw ZPL to the selected printer. It reads that printer's status page before enabling print and adapts each ZPL label to the reported print width and label length. It includes those live dimensions in `^PW` and `^LL` on each print job. The preview remains portrait; when the report is landscape, the app rotates the artwork 90° and lays the cut labels across the printer's reported print-width axis. When the report is portrait, it prints the artwork upright and lays labels along the feed axis. The UI shows the live physical canvas separately from the design preview. The current printer report of about **1200 × 614 dots** is treated as configured media; the app does not force a hard-coded 600 × 1200-dot portrait setup.
 
 The report describes the printer's configured print width (across the printhead) and label length (feed direction); it does not physically sense how the roll is installed. Load and calibrate the intended stock so its physical orientation matches that report, refresh printer status, and verify the preview-to-canvas mapping before confirming print setup. Print remains disabled unless the printer reports READY, both dimensions are readable, and setup is confirmed. Zebra desktop software is not required because the app sends ZPL directly.
 

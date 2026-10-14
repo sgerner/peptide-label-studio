@@ -237,7 +237,7 @@ h3 { margin-bottom: 4px; font-size: 13px; letter-spacing: -.01em; }
 .orientation-tag { flex: 0 0 auto; padding: 6px 8px; color: #3c7582; border: 1px solid #d5eaed; border-radius: 7px; background: #eff8f9; font-size: 9px; font-weight: 700; }
 .preview-wrap { display: flex; flex-direction: column; align-items: center; padding: 8px 0 12px; border-radius: 11px; background: #f4f6f8; }
 .preview-stock {
-  width: min(256px, 72vw);
+  width: min(288px, 72vw);
   aspect-ratio: 1 / 2;
   overflow: hidden;
   display: flex;
@@ -246,10 +246,10 @@ h3 { margin-bottom: 4px; font-size: 13px; letter-spacing: -.01em; }
   border: 1px solid #d6dde2;
   box-shadow: 0 5px 13px rgb(41 59 75 / 9%);
 }
-.preview-band { flex: 1 1 0; min-height: 0; overflow: hidden; padding: 4px 7px 3px; border-bottom: 1px dashed #a8b1bb; color: #293848; }
+.preview-band { flex: 1 1 0; min-height: 0; overflow: hidden; padding: 6px 8px 4px; border-bottom: 1px dashed #a8b1bb; color: #293848; }
 .preview-band:last-child { border-bottom: 0; }
-.preview-name { display: block; overflow: hidden; margin-bottom: 3px; color: #152a3b; font-size: clamp(10px, .75vw, 12px); font-weight: 800; line-height: 1.12; text-overflow: ellipsis; white-space: nowrap; }
-.preview-line { display: block; overflow: hidden; margin-top: 1px; color: #3e4f5f; font-size: clamp(8px, .6vw, 9.5px); line-height: 1.18; text-overflow: ellipsis; white-space: nowrap; }
+.preview-name { display: block; overflow: hidden; margin-bottom: 3px; color: #152a3b; font-size: clamp(20px, 1.5vw, 24px); font-weight: 800; line-height: 1.05; text-overflow: ellipsis; white-space: nowrap; }
+.preview-line { display: block; overflow: hidden; margin-top: 0; color: #3e4f5f; font-size: 16px; line-height: 1.05; text-overflow: ellipsis; white-space: nowrap; }
 .preview-caption { max-width: 290px; margin: 9px 10px 0; color: #788696; font-size: 10px; line-height: 1.4; text-align: center; }
 .output-orientation { display: flex; flex-direction: column; gap: 4px; margin: 0 0 13px; padding: 10px 11px; color: #536273; border: 1px solid #dfe8ec; border-radius: 9px; background: #f7fafb; font-size: 10px; line-height: 1.45; }
 .output-orientation strong { color: #267d80; font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
