@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Vial Label Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36" role="presentation">
+          <path d="M13 4h10v5l3 3v17a3 3 0 0 1-3 3H13a3 3 0 0 1-3-3V12l3-3V4Z" />
+          <path d="M10 15h16M13 4h10M13 22h10" />
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Vial Label Studio</div>
+        <div class="brand-subtitle">Local records · direct Zebra printing</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="local-pill"><span class="local-dot"></span>Stored on this computer</span>
+      <div class="printer-chip" id="printerStatus" aria-live="polite">
+        <span class="status-dot status-dot-pending"></span>
+        <span>Checking printer…</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-grid">
+    <aside class="records-panel panel">
+      <div class="panel-heading records-heading">
+        <div>
+          <p class="eyebrow">LIBRARY</p>
+          <h1>Peptide records</h1>
+        </div>
+        <button class="button button-primary button-icon" id="newRecordButton" type="button" title="Create a new record" aria-label="Create a new record">＋</button>
+      </div>
+      <label class="search-wrap" for="recordSearch">
+        <span aria-hidden="true">⌕</span>
+        <input id="recordSearch" type="search" placeholder="Find a peptide" autocomplete="off">
+      </label>
+      <div class="record-list" id="recordList" aria-label="Saved peptide records"></div>
+      <div class="empty-list" id="emptyList" hidden>
+        <div class="empty-icon" aria-hidden="true">＋</div>
+        <strong>No records yet</strong>
+        <span>Add a record to begin building your label library.</span>
+      </div>
+      <div class="records-footer">
+        <span id="recordCount">0 records</span>
+        <button class="text-button" type="button" id="backupButton">Export backup</button>
+      </div>
+    </aside>
+
+    <section class="editor-panel panel" aria-labelledby="editorTitle">
+      <div class="editor-empty" id="editorEmpty">
+        <div class="empty-illustration" aria-hidden="true">
+          <div class="empty-vial"></div>
+          <div class="empty-label-lines"><i></i><i></i><i></i></div>
+        </div>
+        <p class="eyebrow">LABEL DETAILS</p>
+        <h2>Choose a record or add one</h2>
+        <p>Your saved values stay in a local SQLite database on this computer.</p>
+        <button class="button button-primary" id="emptyNewButton" type="button">＋ Add a peptide</button>
+      </div>
+
+      <form id="recordForm" class="record-form" hidden autocomplete="off">
+        <div class="panel-heading editor-heading">
+          <div>
+            <p class="eyebrow" id="editorEyebrow">NEW RECORD</p>
+            <h2 id="editorTitle">Peptide details</h2>
+          </div>
+          <span class="unsaved-indicator" id="unsavedIndicator" hidden>Unsaved changes</span>
+        </div>
+
+        <div class="form-section">
+          <div class="section-title">
+            <span class="section-number">01</span>
+            <div>
+              <h3>Vial information</h3>
+              <p>Enter the wording and units you want printed.</p>
+            </div>
+          </div>
+          <div class="field-grid">
+            <label class="field field-wide">
+              <span>Peptide name <b class="required">*</b></span>
+              <input name="name" maxlength="80" required placeholder="Name as it should appear">
+            </label>
+            <label class="field">
+              <span>Vial amount</span>
+              <input name="vialQuantity" maxlength="48" placeholder="e.g. 10 mg">
+              <small>Amount in the vial; include the unit.</small>
+            </label>
+            <label class="field">
+              <span>Vial cost</span>
+              <input name="price" maxlength="20" placeholder="Optional; not printed">
+            </label>
+            <label class="field">
+              <span>Dilution / reconstitution</span>
+              <input name="dilution" maxlength="48" placeholder="e.g. 3 mL">
+            </label>
+            <label class="field">
+              <span>Concentration after dilution</span>
+              <input name="concentration" maxlength="32" placeholder="Include units, e.g. mg/mL">
+              <small>Leave blank when not known.</small>
+            </label>
+            <label class="field">
+              <span>Dose / schedule</span>
+              <input name="doseMg" maxlength="40" placeholder="e.g. 1 mg daily">
+              <small>Include the amount, frequency and duration.</small>
+            </label>
+            <label class="field">
+              <span>Dose volume (mL)</span>
+              <input name="doseMl" maxlength="32" inputmode="decimal" placeholder="e.g. 0.1 or 0.1–0.2">
+            </label>
+            <label class="field field-wide">
+              <span>U-100 syringe marks</span>
+              <input name="syringeUnits" maxlength="24" inputmode="decimal" placeholder="Optional; e.g. 10 or 10–20">
+              <small>Volume scale on a U-100 syringe; this is not biological IU.</small>
+            </label>
+          </div>
+          <p class="quiet-note">Values are stored as entered. The app does not infer a dilution or calculate dose conversions.</p>
+        </div>
+
+        <div class="form-section extra-section">
+          <div class="section-title">
+            <span class="section-number">02</span>
+            <div>
+              <h3>Traceability and storage</h3>
+              <p>Optional details for tracking each prepared vial.</p>
+            </div>
+          </div>
+          <div class="field-grid">
+            <label class="field">
+              <span>Lot / batch</span>
+              <input name="lot" maxlength="24" placeholder="Lot identifier">
+            </label>
+            <label class="field">
+              <span>Reconstituted on</span>
+              <input name="reconstitutedDate" type="date">
+            </label>
+            <label class="field">
+              <span>Beyond-use date</span>
+              <input name="beyondUseDate" type="date">
+            </label>
+            <label class="field">
+              <span>Storage instruction</span>
+              <input name="storage" maxlength="40" placeholder="Short instruction">
+            </label>
+            <label class="field field-wide">
+              <span>Short note</span>
+              <input name="notes" maxlength="60" placeholder="Optional; kept brief for the small label">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="button button-danger-quiet" id="deleteRecordButton" type="button" hidden>Delete record</button>
+          <span class="form-message" id="formMessage" role="status" aria-live="polite"></span>
+          <button class="button button-primary" id="saveRecordButton" type="submit">Save record</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="output-panel">
+      <section class="panel print-panel" aria-labelledby="printTitle">
+        <div class="panel-heading print-heading">
+          <div>
+            <p class="eyebrow">PRINT SETUP</p>
+            <h2 id="printTitle">Vial label</h2>
+          </div>
+          <span class="orientation-tag">Portrait design · 2″ × 4″</span>
+        </div>
+
+        <div class="preview-wrap">
+          <div class="preview-stock" id="labelPreview" aria-label="Portrait design preview of repeated 2 by 4 inch vial labels"></div>
+          <p class="preview-caption">Portrait design view · 2″ wide × 4″ tall. Artwork rotates to match the printer’s reported canvas.</p>
+        </div>
+
+        <div class="output-orientation" id="outputOrientation" aria-live="polite">
+          <strong>Physical print canvas</strong>
+          <span>Waiting for the live printer report…</span>
+        </div>
+
+        <div class="print-controls">
+          <label class="field">
+            <span>Individual labels to print</span>
+            <input id="printQuantity" type="number" min="1" max="250" value="1" inputmode="numeric">
+          </label>
+          <label class="field">
+            <span>Strips per 2″ × 4″ design</span>
+            <select id="labelsPerStock">
+              <option value="8" selected>8 strips · ½″ each</option>
+              <option value="6">6 strips · ⅔″ each</option>
+              <option value="5">5 strips · ⅘″ each</option>
+            </select>
+          </label>
+          <div class="print-summary" id="printSummary" aria-live="polite">1 cut strip · 1 printer label</div>
+          <label class="media-confirm">
+            <input id="mediaConfirmed" type="checkbox">
+            <span>I checked the loaded roll and calibration against the physical printer canvas shown above.</span>
+          </label>
+          <button class="button button-print" id="printButton" type="button" disabled>
+            <span aria-hidden="true">▤</span>
+            <span>Print labels</span>
+          </button>
+          <p class="print-help" id="printHelp">Save a record, verify the physical canvas and roll setup, then confirm calibration to enable printing.</p>
+        </div>
+      </section>
+
+      <section class="panel printer-panel" aria-labelledby="printerTitle">
+        <div class="panel-heading compact-heading">
+          <div>
+            <p class="eyebrow">DEVICE</p>
+            <h2 id="printerTitle">Zebra printer</h2>
+          </div>
+          <button class="icon-button" id="refreshPrinterButton" type="button" aria-label="Refresh printer status" title="Refresh status">↻</button>
+        </div>
+        <div class="printer-selection">
+          <label class="field" for="printerSelect">
+            <span>Selected printer</span>
+            <select id="printerSelect" aria-label="Selected printer">
+              <option value="">Find printers on network</option>
+            </select>
+          </label>
+          <div class="printer-actions">
+            <button class="button button-outline button-small" id="discoverPrintersButton" type="button">Find printers</button>
+            <button class="button button-primary button-small" id="selectPrinterButton" type="button" disabled>Use selected</button>
+          </div>
+        </div>
+        <p class="printer-discovery-message" id="printerDiscoveryMessage" role="status" aria-live="polite">Searches private local IPv4 networks for Zebra printers with raw ZPL on port 9100.</p>
+        <div class="printer-details" id="printerDetails" aria-live="polite">
+          <span class="status-dot status-dot-pending"></span>
+          <span>Checking selected printer and media…</span>
+        </div>
+        <div class="printer-target" id="printerTarget">No printer selected · raw ZPL / port 9100</div>
+      </section>
+
+      <section class="panel history-panel" aria-labelledby="historyTitle">
+        <div class="panel-heading compact-heading">
+          <div>
+            <p class="eyebrow">RECENT ACTIVITY</p>
+            <h2 id="historyTitle">Print history</h2>
+          </div>
+        </div>
+        <div class="job-list" id="jobList"><p class="muted-empty">No print jobs yet.</p></div>
+      </section>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

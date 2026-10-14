@@ -1,0 +1,14 @@
+{
+  "name": "peptide-label-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local SQLite-backed editor and 2×4 inch vial label printer for a Zebra ZT230.",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "start:no-browser": "OPEN_BROWSER=0 node server.js"
+  }
+}
